@@ -46,6 +46,12 @@ const App = () => {
     const [analytics2, setAnalytics2] = useState([]);
     const [twoCharts, setTwoCharts] = useState(false);
 
+
+    // console.log('analytics ', analytics)
+    // console.log('analytics2 ', analytics2)
+
+
+
     const handleOptionChange = (event) => {
         const value = event.target.value === "double";
         setTwoCharts(value);
@@ -283,7 +289,6 @@ const App = () => {
             const startYearCode = parseInt(startYr) - 2007;
             const endYearCode = parseInt(endYr) - 2007;
             const responseData = response.data.slice(startYearCode, endYearCode + 1);
-
             const chartData = responseData.map((data) => ({
                 DATE: (data[0].split(' ')[0]).split('/')[2],
                 POP: data[2],
@@ -462,23 +467,23 @@ const App = () => {
                 mean += parseInt(seriesData[i][j]);
             }
             mean = mean / seriesData[i].length;
-            data.push("Mean of " + series[i][0] + " in " + series[i][1] + ": " + mean.toLocaleString());
+            data.push({ text: "Mean of " + series[i][0] + " in " + series[i][1] + ": " + mean.toLocaleString(), type: series[i][0], key: 'Mean', value: mean.toLocaleString() });
             var min = Math.min(...seriesData[i]);
             var max = Math.max(...seriesData[i]);
-            data.push("Min of " + series[i][0] + " in " + series[i][1] + ": " + min.toLocaleString());
-            data.push("Max of " + series[i][0] + " in " + series[i][1] + ": " + max.toLocaleString());
+            data.push({ text: "Min of " + series[i][0] + " in " + series[i][1] + ": " + min.toLocaleString(), type: series[i][0], key: 'Min', value: min.toLocaleString() });
+            data.push({ text: "Max of " + series[i][0] + " in " + series[i][1] + ": " + max.toLocaleString(), type: series[i][0], key: 'Max', value: max.toLocaleString() });
             var range = max - min;
-            data.push("Range of " + series[i][0] + " in " + series[i][1] + ": " + range.toLocaleString());
+            data.push({ text: "Range of " + series[i][0] + " in " + series[i][1] + ": " + range.toLocaleString(), type: series[i][0], key: 'Range', value: range.toLocaleString() });
             var sd = standardDeviation(seriesData[i], mean);
-            data.push("Standard Deviation of " + series[i][0] + " in " + series[i][1] + ": " + sd.toLocaleString());
+            data.push({ text: "Standard Deviation of " + series[i][0] + " in " + series[i][1] + ": " + sd.toLocaleString(), type: series[i][0], key: 'Standard Deviation', value: sd.toLocaleString() });
             var cv = coefficientOfVariation(seriesData[i]);
-            data.push("Coefficient of Variation of " + series[i][0] + " in " + series[i][1] + ": " + cv.toLocaleString());
+            data.push({ text: "Coefficient of Variation of " + series[i][0] + " in " + series[i][1] + ": " + cv.toLocaleString(), type: series[i][0], key: 'Coefficient of Variation', value: cv.toLocaleString() });
         };
         if (series.length === 2 && seriesData[0].length === seriesData[1].length) {
             const r = calculatePearsonCorrelation(seriesData[0], seriesData[1]);
-            data.push("Pearson Correlation: " + r.toLocaleString());
+            data.push({ text: "Pearson Correlation: " + r.toLocaleString(), type: 'Pearson Correlation', key: 'Pearson Correlation', value: r.toLocaleString() });
             const t = Math.abs(tTestTwoSample(seriesData[0], seriesData[1]));
-            data.push("T-Test: " + t.toLocaleString());
+            data.push({ text: "T-Test: " + t.toLocaleString(), type: 'T-Test', key: 'T-Test', value: t.toLocaleString() });
         };
         setAnalytics(data);
     };
@@ -491,23 +496,23 @@ const App = () => {
                 mean += parseInt(seriesData2[i][j]);
             }
             mean = mean / seriesData2[i].length;
-            data.push("Mean of " + series2[i][0] + " in " + series2[i][1] + ": " + mean.toLocaleString());
+            data.push({ text: "Mean of " + series2[i][0] + " in " + series2[i][1] + ": " + mean.toLocaleString(), type: series2[i][0], key: 'Mean', value: mean.toLocaleString() });
             var min = Math.min(...seriesData2[i]);
             var max = Math.max(...seriesData2[i]);
-            data.push("Min of " + series2[i][0] + " in " + series2[i][1] + ": " + min.toLocaleString());
-            data.push("Max of " + series2[i][0] + " in " + series2[i][1] + ": " + max.toLocaleString());
+            data.push({ text: "Min of " + series2[i][0] + " in " + series2[i][1] + ": " + min.toLocaleString(), type: series2[i][0], key: 'Min', value: min.toLocaleString() });
+            data.push({ text: "Max of " + series2[i][0] + " in " + series2[i][1] + ": " + max.toLocaleString(), type: series2[i][0], key: 'Max', value: max.toLocaleString() });
             var range = max - min;
-            data.push("Range of " + series2[i][0] + " in " + series2[i][1] + ": " + range.toLocaleString());
+            data.push({ text: "Range of " + series2[i][0] + " in " + series2[i][1] + ": " + range.toLocaleString(), type: series2[i][0], key: 'Range', value: range.toLocaleString() });
             var sd = standardDeviation(seriesData2[i], mean);
-            data.push("Standard Deviation of " + series2[i][0] + " in " + series2[i][1] + ": " + sd.toLocaleString());
+            data.push({ text: "Standard Deviation of " + series2[i][0] + " in " + series2[i][1] + ": " + sd.toLocaleString(), type: series2[i][0], key: 'Standard Deviation', value: sd.toLocaleString() });
             var cv = coefficientOfVariation(seriesData2[i]);
-            data.push("Coefficient of Variation of " + series2[i][0] + " in " + series2[i][1] + ": " + cv.toLocaleString());
+            data.push({ text: "Coefficient of Variation of " + series2[i][0] + " in " + series2[i][1] + ": " + cv.toLocaleString(), type: series2[i][0], key: 'Coefficient of Variation', value: cv.toLocaleString() });
         };
         if (series2.length === 2 && seriesData2[0].length === seriesData2[1].length) {
             const r = calculatePearsonCorrelation(seriesData2[0], seriesData2[1]);
-            data.push("Pearson Correlation: " + r.toLocaleString());
+            data.push({ text: "Pearson Correlation: " + r.toLocaleString(), type: 'text', key: 'Pearson Correlation', value: r.toLocaleString() });
             const t = Math.abs(tTestTwoSample(seriesData2[0], seriesData2[1]));
-            data.push("T-Test: " + t.toLocaleString());
+            data.push({ text: "T-Test: " + t.toLocaleString(), type: 'text', key: 'T-Test', value: t.toLocaleString() });
         };
         setAnalytics2(data);
     };
@@ -594,11 +599,37 @@ const App = () => {
                         <Button className='border border-green-500 rounded-md p-2 cursor-pointer pl-3 w-40 hover:bg-green-500 hover:text-white' onClick={generateGraph}>Generate Graph</Button>
                         <Button className='border border-green-500 rounded-md p-2 cursor-pointer pl-3 w-40 hover:bg-green-500 hover:text-white ml-9' onClick={runAnalytics}>Run Analytics</Button>
                         <div id="chartdiv" style={{ width: '100%', height: '500px' }}></div>
-                        <div id="analytics">
-                            {analytics.map((data) => (
-                                <p>{data}</p>
-                            ))}
-                        </div>
+
+                        {analytics.length && <div id="analytics">
+
+                            <h3 className='text-4xl text-center my-6'>Table Analysis</h3>
+                            <table className='w-[60%] m-auto mb-10 border-spacing-2'>
+                                <caption class="caption-top">
+                                    Table 1: {analytics[0].type} Growth.
+                                </caption>
+                                <thead className='bg-gray-400'>
+
+                                    <tr >
+                                        {/* <th>head1</th> */}
+                                        <th className='w-[25%] bg-red-200' align='center'>Type</th>
+                                        <th align='center'>Key</th>
+                                        <th align='center'>value</th>
+                                    </tr>
+                                </thead>
+                                <tbody className=''>
+
+                                    {analytics.map((data) => (
+                                        <tr className='bg-gray-200 '>
+                                            {/* <td>{data.text}</td> */}
+                                            <td align='center' >{data.type}</td>
+                                            <td align='center'>{data.key}</td>
+                                            <td align='center'>{data.value}</td>
+                                        </tr>
+
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>}
                     </div>
                 </div>
             ) : (
@@ -623,7 +654,7 @@ const App = () => {
                                 {/* <input type='text' className='border p-2 pl-3  border-black w-40 borderTop' placeholder="Start year:" min={min} max={max} onChange={handleStartYearChange} />
                 <input type='text' className='border p-2 pl-3 ml-9  border-black w-40 borderTop' placeholder="End year:" min={min} max={max} onChange={handleEndYearChange} /> */}
 
-                                <div className='d-flex bg-red-600'>
+                                <div className='d-flex'>
 
                                     <InputWithValidation className='border p-2 pl-3  border-black w-40 borderTop rounded-md' label="Start year:" min={min} max={max} onChange={handleStartYearChange} />
                                     <InputWithValidation className='border p-2 pl-3 ml-9  border-black w-40 borderTop rounded-md' label="End year:" min={min} max={max} onChange={handleEndYearChange} />
@@ -675,8 +706,12 @@ const App = () => {
                                     </select>
                                 </div>
                                 <br />
-                                <input type='text' className='border p-2 pl-3  border-black w-40 borderTop' placeholder="Start year:" min={min} max={max} onChange={handleStartYearChange} />
-                                <input type='text' className='border p-2 pl-3  border-black w-40 borderTop ml-9' placeholder="End year:" min={min} max={max} onChange={handleEndYearChange} />
+                                {/* <input type='text' className='border p-2 pl-3  border-black w-40 borderTop' placeholder="Start year:" min={min} max={max} onChange={handleStartYearChange} />
+                                <input type='text' className='border p-2 pl-3  border-black w-40 borderTop ml-9' placeholder="End year:" min={min} max={max} onChange={handleEndYearChange} /> */}
+
+                                <InputWithValidation className='border p-2 pl-3  border-black w-40 borderTop rounded-md' label="Start year:" min={min} max={max} onChange={handleStartYearChange} />
+                                <InputWithValidation className='border p-2 pl-3 ml-9  border-black w-40 borderTop rounded-md' label="End year:" min={min} max={max} onChange={handleEndYearChange} />
+
                                 <div className='flex mt-4'>
                                     <p className='p-2 pl-3 w-40'>  Select State: </p>
                                     <input list='state' className='border border-black ml-9 p-2 cursor-pointer pl-3 w-40 borderTop' type="text" value={selectedState} onChange={handleStateChange} required />
@@ -702,23 +737,96 @@ const App = () => {
 
                         </div>
                     </div>
-                    <div className="flex-parent-element">
-                        <div className="flex-child-element" id="chartdiv" style={{ width: '50%', height: '400px' }}></div>
+                    <div className="flex-parent-element" >
+                        <div className="flex-child-element" id="chartdiv" style={{ width: '100%', height: '500px' }}></div>
                         <div id="analytics">
-                            {analytics.map((data) => (
-                                <p>{data}</p>
-                            ))}
+                            {/* {analytics?.map((data) => (
+                                <p>{data.text}</p>
+                            ))} */}
+
+
+                            {analytics?.length &&
+                                <>
+                                    <h3 className='text-4xl text-center my-6'>Table Analysis</h3>
+
+                                    <table className='w-[60%] m-auto mb-10 border-spacing-2'>
+                                        <caption class="caption-top">
+                                            Table 1: {analytics[0]?.type} Growth.
+                                        </caption>
+                                        <thead className='bg-gray-400'>
+
+                                            <tr >
+                                                {/* <th>head1</th> */}
+                                                <th className='w-[25%] bg-red-200' align='center'>Type</th>
+                                                <th align='center'>Key</th>
+                                                <th align='center'>value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className=''>
+
+                                            {analytics?.map((data) => (
+                                                <tr className='bg-gray-200 '>
+                                                    {/* <td>{data.text}</td> */}
+                                                    <td align='center' >{data?.type}</td>
+                                                    <td align='center'>{data?.key}</td>
+                                                    <td align='center'>{data?.value}</td>
+                                                </tr>
+
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </>}
+
+
+
+
                         </div>
-                        <div className="flex-child-element" id="chartdiv2" style={{ width: '50%', height: '400px' }}></div>
+                        <div className="flex-child-element" id="chartdiv2" style={{ width: '100%', height: '500px' }}></div>
                         <div id="analytics2">
-                            {analytics2.map((data) => (
-                                <p>{data}</p>
-                            ))}
+                            {/* {analytics2?.map((data) => (
+                                <p>{data.text}</p>
+                            ))} */}
+
+                            {analytics2?.length &&
+                                <>
+                                    <h3 className='text-4xl text-center my-6'>Table Analysis</h3>
+
+                                    <table className='w-[60%] m-auto mb-10 border-spacing-2'>
+                                        <caption class="caption-top">
+                                            Table 1: {analytics2[0]?.type} Growth.
+                                        </caption>
+                                        <thead className='bg-gray-400'>
+
+                                            <tr >
+                                                {/* <th>head1</th> */}
+                                                <th className='w-[25%] bg-red-200' align='center'>Type</th>
+                                                <th align='center'>Key</th>
+                                                <th align='center'>value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className=''>
+
+                                            {analytics2?.map((data) => (
+                                                <tr className='bg-gray-200 '>
+                                                    {/* <td>{data.text}</td> */}
+                                                    <td align='center' >{data?.type}</td>
+                                                    <td align='center'>{data?.key}</td>
+                                                    <td align='center'>{data?.value}</td>
+                                                </tr>
+
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </>
+                            }
+
+
                         </div>
                     </div>
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 };
 
