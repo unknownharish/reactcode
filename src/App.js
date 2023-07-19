@@ -21,6 +21,8 @@ import { coefficientOfVariation } from 'simple-statistics';
 import InputWithValidation from './inputWithValidation';
 
 import { List } from './list'
+import Tabledata from './components/Tabledata';
+import { Analytics } from '@mui/icons-material';
 
 am4core.useTheme(am4themes_animated);
 
@@ -47,8 +49,21 @@ const App = () => {
     const [twoCharts, setTwoCharts] = useState(false);
 
 
-    // console.log('analytics ', analytics)
-    // console.log('analytics2 ', analytics2)
+    const [stateForGraphOne, setstateForGraphOne] = useState()
+    const [stateForGraphTwo, setstateForGraphTwo] = useState()
+    const [stateGenGraph, setstateGenGraph] = useState([])
+    const [stateGenGraph2, setstateGenGraph2] = useState([])
+    const [comparision, setcomparision] = useState({})
+    const [graphDataOfState, setgraphDataOfState] = useState({})
+
+
+    console.log('analytics ', analytics)
+    console.log('analytics2 ', analytics2)
+    console.log('table value ', analytics[stateForGraphOne])
+    console.log('table value 2', analytics[stateForGraphTwo])
+    console.log('stateForGraphOne value ', stateForGraphOne)
+    console.log('stateGenGraph2 value ', stateGenGraph2)
+    console.log('stateGenGraph value ', stateGenGraph)
 
 
 
@@ -461,12 +476,14 @@ const App = () => {
 
     const runAnalytics = (vars) => {
         const data = [];
-        for (let i = 0; i < series.length; i++) {
+        let stateName = []
+        for (let i = 0; i < series?.length; i++) {
             var mean = 0;
-            for (let j = 0; j < seriesData[i].length; j++) {
+            for (let j = 0; j < seriesData[i]?.length; j++) {
                 mean += parseInt(seriesData[i][j]);
             }
             mean = mean / seriesData[i].length;
+            stateName.push(series[i][1])
             data.push({ text: "Mean of " + series[i][0] + " in " + series[i][1] + ": " + mean.toLocaleString(), type: series[i][0], key: 'Mean', value: mean.toLocaleString() });
             var min = Math.min(...seriesData[i]);
             var max = Math.max(...seriesData[i]);
@@ -485,10 +502,34 @@ const App = () => {
             const t = Math.abs(tTestTwoSample(seriesData[0], seriesData[1]));
             data.push({ text: "T-Test: " + t.toLocaleString(), type: 'T-Test', key: 'T-Test', value: t.toLocaleString() });
         };
-        setAnalytics(data);
+
+
+        let spliceLength = data.length / 6
+        // console.log('inide analytics data for push', data.length)
+
+
+        let finaldata = {}
+        for (let k = 0; k < spliceLength; k++) {
+
+
+            let obj = data.slice(6 * k, 6 * (k + 1))
+            console.log('stteNmwe', stateName[k])
+            console.log('data pushed', obj)
+
+            finaldata[stateName[k]] = { data: obj }
+            //  setAnalytics({ [stateName[k]]: { data: obj }, ...Analytics });
+            console.log('finaldata ', finaldata)
+
+        }
+
+        setAnalytics(finaldata);
+        setstateGenGraph([...stateName])
+        console.log('series is', series)
+        console.log('series is', seriesData)
     };
 
     const runAnalytics2 = (vars) => {
+        let stateName = []
         const data = [];
         for (let i = 0; i < series2.length; i++) {
             var mean = 0;
@@ -496,6 +537,7 @@ const App = () => {
                 mean += parseInt(seriesData2[i][j]);
             }
             mean = mean / seriesData2[i].length;
+            stateName = series2[i][1]
             data.push({ text: "Mean of " + series2[i][0] + " in " + series2[i][1] + ": " + mean.toLocaleString(), type: series2[i][0], key: 'Mean', value: mean.toLocaleString() });
             var min = Math.min(...seriesData2[i]);
             var max = Math.max(...seriesData2[i]);
@@ -514,7 +556,34 @@ const App = () => {
             const t = Math.abs(tTestTwoSample(seriesData2[0], seriesData2[1]));
             data.push({ text: "T-Test: " + t.toLocaleString(), type: 'text', key: 'T-Test', value: t.toLocaleString() });
         };
-        setAnalytics2(data);
+
+
+
+
+        let spliceLength = data.length / 6
+        console.log('data length', spliceLength)
+        let finaldata = {}
+        for (let k = 0; k < spliceLength; k++) {
+
+
+            let obj = data.slice(6 * k, 6 * (k + 1))
+            console.log('stteNmwe', stateName)
+            console.log('data pushed', obj)
+
+            finaldata[stateName] = { data: obj }
+            //  setAnalytics({ [stateName[k]]: { data: obj }, ...Analytics });
+            console.log('finaldata ', finaldata)
+
+        }
+
+        console.log('series 2 is ', series2)
+        // setstateGenGraph([...stateGenGraph,stateName])
+        // setAnalytics2(finaldata);
+
+        setAnalytics({...analytics,...finaldata});
+        setstateGenGraph([...stateGenGraph,stateName])
+
+
     };
 
 
@@ -548,6 +617,9 @@ const App = () => {
 
             <datalist id='state'>
                 {List.map(x => (<option key={x} value={x} />))}
+            </datalist>
+            <datalist id='stateGraph'>
+                {stateGenGraph.map(x => (<option key={x} value={x} />))}
             </datalist>
 
             {twoCharts === false ? (
@@ -600,35 +672,67 @@ const App = () => {
                         <Button className='border border-green-500 rounded-md p-2 cursor-pointer pl-3 w-40 hover:bg-green-500 hover:text-white ml-9' onClick={runAnalytics}>Run Analytics</Button>
                         <div id="chartdiv" style={{ width: '100%', height: '500px' }}></div>
 
-                        {analytics.length && <div id="analytics">
 
+
+                        {stateGenGraph.length && <div id="analytics">
                             <h3 className='text-4xl text-center my-6'>Table Analysis</h3>
-                            <table className='w-[60%] m-auto mb-10 border-spacing-2'>
-                                <caption class="caption-top">
-                                    Table 1: {analytics[0].type} Growth.
-                                </caption>
-                                <thead className='bg-gray-400'>
 
-                                    <tr >
-                                        {/* <th>head1</th> */}
-                                        <th className='w-[25%] bg-red-200' align='center'>Type</th>
-                                        <th align='center'>Key</th>
-                                        <th align='center'>value</th>
-                                    </tr>
-                                </thead>
-                                <tbody className=''>
+                            <div className='flex justify-around my-5'>
 
-                                    {analytics.map((data) => (
-                                        <tr className='bg-gray-200 '>
-                                            {/* <td>{data.text}</td> */}
-                                            <td align='center' >{data.type}</td>
-                                            <td align='center'>{data.key}</td>
-                                            <td align='center'>{data.value}</td>
+                                <div className=''>
+                                    <h4 className='p-2 pl-3 w-40 ml-9'>  Select State 1: </h4>
+                                    <input list="stateGraph" className='border border-black ml-9 p-2 cursor-pointer pl-3 w-40 borderTop rounded-md' type="text" value={stateForGraphOne} onChange={(e) => setstateForGraphOne(e.target.value)} required placeholder='Enter State' />
+                                </div>
+                                <div className=''>
+                                    <h4 className='p-2 pl-3 w-40 ml-9'>  Select State 2: </h4>
+                                    <input list="stateGraph" className='border border-black ml-9 p-2 cursor-pointer pl-3 w-40 borderTop rounded-md' type="text" value={stateForGraphTwo} onChange={(e) => setstateForGraphTwo(e.target.value)} required placeholder='Enter State' />
+                                </div>
+                            </div>
+
+                            <div className='flex w-full'>
+                                {stateForGraphOne && <table className='w-[40%] m-auto mb-10 border-spacing-2'>
+                                    <caption class="caption-top">
+                                        {/* Table 1: {analytics[0].type} Growth. */}
+                                    </caption>
+                                    <thead className='bg-gray-400'>
+
+                                        <tr >
+                                            {/* <th>head1</th> */}
+                                            <th className='w-[25%] bg-red-200' align='center'>Type</th>
+                                            <th align='center'>Key</th>
+                                            <th align='center'>value</th>
                                         </tr>
+                                    </thead>
+                                    <tbody className=''>
 
-                                    ))}
-                                </tbody>
-                            </table>
+                                        {analytics[stateForGraphOne]?.data?.map((data, idx) => (
+                                            <Tabledata data={data} key={idx} />
+                                        ))}
+                                    </tbody>
+                                </table>}
+
+                                {stateForGraphTwo && <table className='w-[40%] m-auto mb-10 border-spacing-2'>
+                                    <caption class="caption-top">
+                                        {/* Table 1: {analytics[0].type} Growth. */}
+                                    </caption>
+                                    <thead className='bg-gray-400'>
+
+                                        <tr >
+                                            {/* <th>head1</th> */}
+                                            <th className='w-[25%] bg-red-200' align='center'>Type</th>
+                                            <th align='center'>Key</th>
+                                            <th align='center'>value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className=''>
+
+                                        {analytics[stateForGraphTwo]?.data?.map((data, idx) => (
+                                            <Tabledata data={data} key={idx} />
+                                        ))}
+                                    </tbody>
+                                </table>}
+
+                            </div>
                         </div>}
                     </div>
                 </div>
@@ -745,7 +849,26 @@ const App = () => {
                             ))} */}
 
 
-                            {analytics?.length &&
+
+                        </div>
+                        <div className="flex-child-element" id="chartdiv2" style={{ width: '100%', height: '500px' }}></div>
+
+
+                        <div className='flex justify-around my-5'>
+
+                            <div className=''>
+                                <h4 className='p-2 pl-3 w-40 ml-9'>  Select State 1: </h4>
+                                <input list="stateGraph" className='border border-black ml-9 p-2 cursor-pointer pl-3 w-40 borderTop rounded-md' type="text" value={stateForGraphOne} onChange={(e) => setstateForGraphOne(e.target.value)} required placeholder='Enter State' />
+                            </div>
+                            <div className=''>
+                                <h4 className='p-2 pl-3 w-40 ml-9'>  Select State 2: </h4>
+                                <input list="stateGraph" className='border border-black ml-9 p-2 cursor-pointer pl-3 w-40 borderTop rounded-md' type="text" value={stateForGraphTwo} onChange={(e) => setstateForGraphTwo(e.target.value)} required placeholder='Enter State' />
+                            </div>
+                        </div>
+
+                        <div id="analytics2">
+
+                            {Object.keys(analytics)?.length &&
                                 <>
                                     <h3 className='text-4xl text-center my-6'>Table Analysis</h3>
 
@@ -764,30 +887,23 @@ const App = () => {
                                         </thead>
                                         <tbody className=''>
 
-                                            {analytics?.map((data) => (
-                                                <tr className='bg-gray-200 '>
-                                                    {/* <td>{data.text}</td> */}
-                                                    <td align='center' >{data?.type}</td>
-                                                    <td align='center'>{data?.key}</td>
-                                                    <td align='center'>{data?.value}</td>
-                                                </tr>
+                                            {analytics[stateForGraphOne]?.data?.map((data, idx) => (
+                                                <Tabledata data={data} key={idx} />
+
 
                                             ))}
                                         </tbody>
                                     </table>
                                 </>}
 
-
-
-
                         </div>
-                        <div className="flex-child-element" id="chartdiv2" style={{ width: '100%', height: '500px' }}></div>
+
                         <div id="analytics2">
                             {/* {analytics2?.map((data) => (
                                 <p>{data.text}</p>
                             ))} */}
 
-                            {analytics2?.length &&
+                            {Object.keys(analytics)?.length &&
                                 <>
                                     <h3 className='text-4xl text-center my-6'>Table Analysis</h3>
 
@@ -806,13 +922,9 @@ const App = () => {
                                         </thead>
                                         <tbody className=''>
 
-                                            {analytics2?.map((data) => (
-                                                <tr className='bg-gray-200 '>
-                                                    {/* <td>{data.text}</td> */}
-                                                    <td align='center' >{data?.type}</td>
-                                                    <td align='center'>{data?.key}</td>
-                                                    <td align='center'>{data?.value}</td>
-                                                </tr>
+                                            {analytics[stateForGraphTwo]?.data?.map((data, idx) => (
+                                                <Tabledata data={data} key={idx} />
+
 
                                             ))}
                                         </tbody>
